@@ -47,9 +47,9 @@ if __name__ == "__main__":
   BASE = crawler.base
   urls = crawler.crawl()
   print("URL-count: ", len(urls))
+  emailList = []
   for url in urls:
     html = getHtml(INIT)
-    emailList = getEmails(html)
-    print(emailList)
-    # print(emailList)
+    emailList.append(getEmails(html))
+  print("\n".join(emailList))
   

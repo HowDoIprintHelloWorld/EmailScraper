@@ -44,7 +44,6 @@ class Crawler():
             self.todo.append(linky)
           else:
             pass
-    print(self.done)
     self.done.append(URL)
 
 
