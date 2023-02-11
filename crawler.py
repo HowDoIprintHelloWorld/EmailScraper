@@ -45,8 +45,6 @@ class Crawler():
         if hostname.endswith(self.base):
           if linky not in self.done and linky not in self.todo:
             self.todo.append(linky)
-          else:
-            pass
     self.done.append(URL)
     self.todo.pop(0)
     print('\rURLs scanned: ({}/{});   Active threads: {};'.format(str(len(self.done)), str(len(self.todo) + len(self.done)), str(threading.active_count())),end='',flush=True)
@@ -66,7 +64,7 @@ class Crawler():
         self.threads.append(x)
           #self.todo.pop(0)
       if not self.todo:
-        for i, x in enumerate(threads):
+        for i, x in enumerate(self.threads):
           x.join()
         print("")
         return self.done
