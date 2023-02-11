@@ -32,6 +32,8 @@ class Crawler():
 
   
   def getLinks(self, URL):
+    if not URL:
+      return
     response = requests.get(URL)
     links = bs4.BeautifulSoup(response.text, 'html.parser').select("a")
     for link in links:
@@ -47,22 +49,24 @@ class Crawler():
             pass
     self.done.append(URL)
     self.todo.pop(0)
-    print('\rURLs scanned: ({}/{});   Active threads: {}'.format(str(len(self.done)), str(len(self.todo) + len(self.done)), str(threading.active_count())),end='',flush=True)
+    print('\rURLs scanned: ({}/{});   Active threads: {};'.format(str(len(self.done)), str(len(self.todo) + len(self.done)), str(threading.active_count())),end='',flush=True)
 
 
   def crawl(self):
+    self.threads = []
     while True:
+      if len(self.threads) >= 10:
+        self.threads = [x for x in self.threads if x.is_alive()]
+        continue
       url = self.todo[0]
       if url not in self.done:
         #self.getLinks(url)
-        threads = []
-        for _ in range(8):
-          x = threading.Thread(target=self.getLinks, args=(url,), daemon=True)
-          x.start()
-          threads.append(x)
+        x = threading.Thread(target=self.getLinks, args=(url,), daemon=True)
+        x.start()
+        self.threads.append(x)
           #self.todo.pop(0)
+      if not self.todo:
         for i, x in enumerate(threads):
           x.join()
-      if not self.todo:
         print("")
         return self.done
