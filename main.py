@@ -50,6 +50,6 @@ if __name__ == "__main__":
   emailList = []
   for url in urls:
     html = getHtml(INIT)
-    emailList.append(getEmails(html))
+    emailList += getEmails(html)
   print("\n".join(emailList))
   

@@ -46,8 +46,27 @@ class Crawler():
           if linky not in self.done and linky not in self.todo:
             self.todo.append(linky)
     self.done.append(URL)
-    self.todo.pop(0)
+    if self.todo:
+      self.todo.pop(0)
     print('\rURLs scanned: ({}/{});   Active threads: {};'.format(str(len(self.done)), str(len(self.todo) + len(self.done)), str(threading.active_count())),end='',flush=True)
+
+
+  def cutDupes(self):
+    self.done = list(set(self.done))
+
+
+  def checkDone(self):
+    if not self.todo:
+        for i, x in enumerate(self.threads):
+          x.join()
+        print("")
+        self.cutDupes()
+        with open("crawlresults/"+self.base + ".txt", "w") as f:
+            for url in self.done:
+                f.write(url+"\n")
+        return True
+    return False
+
 
 
   def crawl(self):
@@ -56,6 +75,8 @@ class Crawler():
       if len(self.threads) >= 10:
         self.threads = [x for x in self.threads if x.is_alive()]
         continue
+      if self.checkDone():
+        return self.done
       url = self.todo[0]
       if url not in self.done:
         #self.getLinks(url)
@@ -63,8 +84,5 @@ class Crawler():
         x.start()
         self.threads.append(x)
           #self.todo.pop(0)
-      if not self.todo:
-        for i, x in enumerate(self.threads):
-          x.join()
-        print("")
+      if self.checkDone():
         return self.done
